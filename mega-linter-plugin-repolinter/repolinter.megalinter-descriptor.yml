@@ -1,0 +1,34 @@
+---
+descriptor_id: "REPOLINTER"
+descriptor_type: "other"
+descriptor_flavors:
+  - "all_flavors"
+  - "ci_light"
+  - "security"
+lint_all_files: true
+linters:
+  - linter_name: repolinter
+    name: REPOSITORY_REPOLINTER
+    linter_repo: "https://github.com/wesley-dean/mega-linter-plugin-repolinter"
+    linter_url: "https://github.com/wesley-dean/mega-linter-plugin-repolinter"
+    config_file_name: "repolinter.json"
+    cli_help_arg_name: "--help"
+    cli_version_arg_name: "--version"
+    cli_lint_fix_remove_args: ["--dryRun"]
+    cli_lint_mode: "project"
+
+    cli_lint_extra_args: ["--dryRun", "--format=result"]
+    cli_lint_errors_count: "regex_count"
+    cli_lint_warnings_count: "regex_count"
+    cli_lint_warnings_regex: "(?m)^⚠️"
+    cli_lint_errors_regex: "(?m)^✖ "
+
+    examples:
+      - "repolinter --dryRun --format=result ."
+      - "repollinter --dryRun --format=result --rules=rules.json ."
+
+    linter_rules_url: "https://github.com/todogroup/repolinter/blob/main/docs/rules.md"
+    version_extract_regex: '\\d*'
+    install:
+      dockerfile:
+        - "RUN npm install -g repolinter"
