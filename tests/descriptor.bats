@@ -19,3 +19,8 @@ setup() {
   grep -Fq '      - "--dryRun"' "${DESCRIPTOR}"
   grep -Fq '      - "--format=console"' "${DESCRIPTOR}"
 }
+
+
+@test "descriptor leaves ruleset discovery to Repolinter" {
+  grep -Fq 'cli_config_arg_name: ""' "${DESCRIPTOR}"
+}

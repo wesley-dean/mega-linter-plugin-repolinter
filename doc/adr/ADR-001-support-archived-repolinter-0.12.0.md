@@ -44,6 +44,12 @@ support MegaLinter `project` mode only.  It SHALL run with `--dryRun` by
 default while preserving MegaLinter's existing fix-mode mechanism that removes
 that argument when fixes are explicitly enabled.
 
+Repolinter SHALL perform its own ruleset discovery.  The descriptor SHALL set
+`cli_config_arg_name` to an empty value so MegaLinter does not apply its generic
+`-c` configuration argument.  Repolinter defines `-c` as `--rulesetEncoded`, so
+passing a discovered `repolinter.json` path through that flag would misinterpret
+the filename as a base64-encoded ruleset.
+
 Integration tests SHALL use repository-owned local fixtures with deterministic
 rulesets.  Tests SHALL NOT depend on cloning live external repositories merely to
 obtain pass/fail examples.

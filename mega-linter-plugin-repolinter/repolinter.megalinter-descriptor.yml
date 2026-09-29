@@ -12,6 +12,7 @@ linters:
     linter_repo: "https://github.com/wesley-dean/mega-linter-plugin-repolinter"
     linter_url: "https://github.com/todogroup/repolinter"
     config_file_name: "repolinter.json"
+    cli_config_arg_name: ""
     cli_executable: "repolinter"
     cli_help_arg_name: "--help"
     cli_version_arg_name: "--version"
