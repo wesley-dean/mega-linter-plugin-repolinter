@@ -9,7 +9,7 @@ lint_all_files: true
 linters:
   - linter_name: "repolinter"
     name: "REPOSITORY_REPOLINTER"
-    linter_repo: "https://github.com/wesley-dean/mega-linter-plugin-repolinter"
+    linter_repo: "https://github.com/todogroup/repolinter"
     linter_url: "https://github.com/todogroup/repolinter"
     config_file_name: "repolinter.json"
     cli_config_arg_name: ""
@@ -27,12 +27,12 @@ linters:
       - "--format=console"
     cli_lint_errors_count: "regex_count"
     cli_lint_warnings_count: "regex_count"
-    cli_lint_warnings_regex: "(?m)^⚠️"
-    cli_lint_errors_regex: "(?m)^✖ "
+    cli_lint_warnings_regex: "(?m)^⚠(?:️)?\\s"
+    cli_lint_errors_regex: "(?m)^✖(?:️)?\\s"
     examples:
       - "repolinter lint --dryRun --format=console ."
       - "repolinter lint --dryRun --format=console --rulesetFile=rules.json ."
-    linter_rules_url: "https://github.com/todogroup/repolinter/blob/main/docs/rules.md"
+    linter_rules_url: "https://github.com/todogroup/repolinter/blob/063fd3578ffd6ce4d95580adb1368a7e25075fc1/docs/rules.md"
     version_extract_regex: "\\d+(?:\\.\\d+){2}"
     install:
       dockerfile:
