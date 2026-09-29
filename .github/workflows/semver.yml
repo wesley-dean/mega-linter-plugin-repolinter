@@ -1,4 +1,6 @@
 ---
+name: Versioning
+
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -6,7 +8,6 @@ on:
       - main
   workflow_dispatch:
 
-name: Versioning
 permissions:
   contents: read
 
@@ -15,43 +16,122 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  versioning:
-    runs-on: ubuntu-22.04
+  validate:
+    name: Validate release descriptor
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
     permissions:
-      contents: write
+      contents: read
+    outputs:
+      version: ${{ steps.calculate-version.outputs.version-string }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # pin@v4
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: calculate version
+      - name: Calculate version
         id: calculate-version
-        uses: bitshifted/git-auto-semver@c4e8f005e839f822325356f141939cf6c76b5701 # pin@v1
+        uses: bitshifted/git-auto-semver@c4e8f005e839f822325356f141939cf6c76b5701 # v1
         with:
-          create_tag: true
+          create_tag: false
           initial_version: 0.0.1
+          tag_prefix: ""
 
-      - name: Set version
-        env:
-          version_string: ${{ steps.calculate-version.outputs.version-string }}
-        run: 'echo "VERSION_STRING=${version-string}" >> "$GITHUB_ENV"'
+      - name: Install Bats
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes bats
+          bats --version
 
-      - name: Generate release notes
-        id: release-notes
-        uses: RedCrafter07/release-notes-action@31674bfa3a219e7c661fc0c5b7b3851c741b9965 # pin@v1.0.1
+      - name: Run behavior tests
+        run: make test
+
+      - name: Validate maintained descriptor
+        run: make validate
+
+      - name: Build exact release descriptor
+        run: |
+          make build \
+            VERSION="${{ steps.calculate-version.outputs.version-string }}" \
+            BUILD_REF="${{ github.sha }}"
+
+      - name: Validate exact release descriptor
+        run: |
+          make validate-release \
+            VERSION="${{ steps.calculate-version.outputs.version-string }}" \
+            BUILD_REF="${{ github.sha }}"
+          make integration-test \
+            VERSION="${{ steps.calculate-version.outputs.version-string }}" \
+            BUILD_REF="${{ github.sha }}"
+
+      - name: Validate release file set
+        shell: bash
+        run: |
+          expected=(
+            repolinter.megalinter-descriptor.yml
+            repolinter.megalinter-descriptor.yml.sha256
+          )
+          shopt -s nullglob
+          actual=(dist/*)
+          test "${#actual[@]}" -eq "${#expected[@]}"
+          for file in "${expected[@]}"; do
+            test -f "dist/${file}"
+          done
+          cd dist
+          sha256sum -c repolinter.megalinter-descriptor.yml.sha256
+
+      - name: Upload validated release files
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          tag-name: "${{ steps.calculate-version.outputs.version-string }}"
-          token: "${{ secrets.GITHUB_TOKEN }}"
+          name: repolinter-release-files
+          path: |
+            dist/repolinter.megalinter-descriptor.yml
+            dist/repolinter.megalinter-descriptor.yml.sha256
+          if-no-files-found: error
+          retention-days: 1
 
-      - name: Create release
-        id: create-release
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # pin@v3.0.3
+  publish:
+    name: Publish validated release
+    needs: validate
+    runs-on: ubuntu-24.04
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download validated release files
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: repolinter-release-files
+          path: dist
+
+      - name: Re-verify transferred release files
+        shell: bash
+        run: |
+          expected=(
+            repolinter.megalinter-descriptor.yml
+            repolinter.megalinter-descriptor.yml.sha256
+          )
+          shopt -s nullglob
+          actual=(dist/*)
+          test "${#actual[@]}" -eq "${#expected[@]}"
+          for file in "${expected[@]}"; do
+            test -f "dist/${file}"
+          done
+          cd dist
+          sha256sum -c repolinter.megalinter-descriptor.yml.sha256
+
+      - name: Create release from validated bytes
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
-          release_name: "${{ steps.calculate-version.outputs.version-string }}"
-          body: "${{ steps.release-notes.outputs.release-notes }}"
-          tag_name: "${{ steps.calculate-version.outputs.version-string }}"
+          name: "${{ needs.validate.outputs.version }}"
+          tag_name: "${{ needs.validate.outputs.version }}"
+          target_commitish: "${{ github.sha }}"
           draft: false
           prerelease: false
+          generate_release_notes: true
+          files: |
+            dist/repolinter.megalinter-descriptor.yml
+            dist/repolinter.megalinter-descriptor.yml.sha256
