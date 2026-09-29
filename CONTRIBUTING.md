@@ -22,3 +22,12 @@ and related rights in the work worldwide are waived through the
 All contributions to this project will be released under the CC0 dedication.
 By submitting a pull request or issue, you are agreeing to comply with
 this waiver of copyright interest.
+
+## Engineering Standards
+
+Contributions must follow the applicable standards beneath `doc/standards/`
+together with accepted repository-specific ADRs and explicit local policy.
+Before changing governed content, review the standards that apply to that
+language, artifact, workflow, or security boundary.  Do not edit imported
+standards locally to create a project-specific exception.
+
