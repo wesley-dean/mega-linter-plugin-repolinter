@@ -27,9 +27,17 @@ creating duplicate `vX.Y.Z` tags.
 
 See [ADR-002](ADR-002-publish-versioned-descriptor-release-assets.md).
 
+### ADR-003: Consolidate GitHub Actions Dependabot Version Updates
+
+Routine major, minor, and patch GitHub Actions versions may share a weekly
+group, with independent security updates and manual major review.
+
+See [ADR-003](ADR-003-consolidate-github-actions-dependabot-maintenance.md).
+
 <!-- adrctl-generated-footer -->
 
 ## Architecture Decision Records
 
 * [ADR-001: Support the Archived Repolinter 0.12.0 Release](ADR-001-support-archived-repolinter-0.12.0.md)
 * [ADR-002: Publish Versioned Repolinter Descriptor Release Assets](ADR-002-publish-versioned-descriptor-release-assets.md)
+* [ADR-003: Consolidate GitHub Actions Dependabot Version Updates](ADR-003-consolidate-github-actions-dependabot-maintenance.md)
