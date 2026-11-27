@@ -34,6 +34,15 @@ group, with independent security updates and manual major review.
 
 See [ADR-003](ADR-003-consolidate-github-actions-dependabot-maintenance.md).
 
+### ADR-004: Migrate Routine Dependency Updates to Central Renovate
+
+Jenkins-hosted Renovate owns scheduled routine updates, with explicit root
+enrollment and Dependabot version-update PR creation disabled. Separate
+security updates and normal human review requirements remain in force.
+This partially supersedes ADR-003's routine scheduling decision.
+
+See [ADR-004](ADR-004-migrate-routine-dependency-updates-to-renovate.md).
+
 <!-- adrctl-generated-footer -->
 
 ## Architecture Decision Records
@@ -41,3 +50,4 @@ See [ADR-003](ADR-003-consolidate-github-actions-dependabot-maintenance.md).
 * [ADR-001: Support the Archived Repolinter 0.12.0 Release](ADR-001-support-archived-repolinter-0.12.0.md)
 * [ADR-002: Publish Versioned Repolinter Descriptor Release Assets](ADR-002-publish-versioned-descriptor-release-assets.md)
 * [ADR-003: Consolidate GitHub Actions Dependabot Version Updates](ADR-003-consolidate-github-actions-dependabot-maintenance.md)
+* [ADR-004: Migrate Routine Dependency Updates to Central Renovate](ADR-004-migrate-routine-dependency-updates-to-renovate.md)
