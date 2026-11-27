@@ -32,3 +32,17 @@ require review outside the existing non-major-only auto-merge path.
 Existing open Dependabot PRs are not presumed replaced.
 
 See [ADR-003](adr/ADR-003-consolidate-github-actions-dependabot-maintenance.md).
+
+## ADR-004: Migrate Routine Dependency Updates to Centrally Managed Renovate
+
+This repository explicitly enrolls in Jenkins-hosted Renovate and disables
+ordinary scheduled Dependabot GitHub Actions version-update PRs.
+Independently triggered security updates, reviewed immutable action pins,
+required checks, and human code-owner approval remain separate.
+ADR-004 partially supersedes ADR-003 as to routine update provider,
+PR-limit policy, and retirement of superseded routine Dependabot PRs,
+while retaining its supply-chain and security-response requirements.
+Actual Renovate execution is an operational verification step, not a
+claim established by this configuration.
+
+See [ADR-004](adr/ADR-004-migrate-routine-dependency-updates-to-renovate.md).
